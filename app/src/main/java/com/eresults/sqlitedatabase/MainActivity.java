@@ -1,5 +1,6 @@
 package com.eresults.sqlitedatabase;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.widget.Button;
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
         // show info
         btnShow.setOnClickListener(v -> {
-            // TODO
+            startActivity(new Intent(this, ListActivity.class));
         });
     }
 
