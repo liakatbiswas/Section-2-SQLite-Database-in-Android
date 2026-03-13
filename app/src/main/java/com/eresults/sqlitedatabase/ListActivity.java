@@ -42,7 +42,8 @@ public class ListActivity extends AppCompatActivity {
             return;
         }
 
-        tvList.setText("Total Data: " + cursor.getCount() + "\n\n");
+        StringBuilder builder = new StringBuilder();
+        builder.append("Total Data: ").append(cursor.getCount()).append("\n\n");
 
         while (cursor.moveToNext()) {
 
@@ -51,8 +52,13 @@ public class ListActivity extends AppCompatActivity {
             String email = cursor.getString(cursor.getColumnIndexOrThrow("email"));
             String phone = cursor.getString(cursor.getColumnIndexOrThrow("phone"));
 
-            tvList.append("ID: " + id + "\n" + "Name: " + name + "\n" + "Email: " + email + "\n" + "Phone: " + phone + "\n\n");
+            builder.append("ID: ").append(id).append("\n")
+                    .append("Name: ").append(name).append("\n")
+                    .append("Email: ").append(email).append("\n")
+                    .append("Phone: ").append(phone).append("\n\n");
         }
+
+        tvList.setText(builder.toString());
 
         cursor.close();
     }
