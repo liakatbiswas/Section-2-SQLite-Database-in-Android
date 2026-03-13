@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">SQLiteDatabase</string>
+    <string name="student_information">Student Information</string>
+    <string name="enter_student_details">Enter student details</string>
+    <string name="name">Name</string>
+    <string name="enter_you_name">Enter you name</string>
+    <string name="email">Email</string>
+    <string name="enter_you_email">Enter you email</string>
+    <string name="phone">Phone</string>
+    <string name="enter_your_phone">Enter your phone</string>
+    <string name="save_student">Save Student</string>
+    <string name="student_list">Student List</string>
+</resources>
