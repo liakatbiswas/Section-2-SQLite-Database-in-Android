@@ -29,6 +29,11 @@ public class ListActivity extends AppCompatActivity {
         tvList = findViewById(R.id.tv_list);
         databaseHelper = new DatabaseHelper(this);
 
+        // Loading data
+        loadData();
+    }
+
+    private void loadData() {
         Cursor cursor = databaseHelper.showAllInfo();
 
         if (cursor.getCount() == 0) {
@@ -50,6 +55,5 @@ public class ListActivity extends AppCompatActivity {
         }
 
         cursor.close();
-
     }
 }
