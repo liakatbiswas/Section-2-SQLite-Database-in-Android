@@ -45,12 +45,17 @@ public class ListActivity extends AppCompatActivity {
         StringBuilder builder = new StringBuilder();
         builder.append("Total Data: ").append(cursor.getCount()).append("\n\n");
 
+        int idIndex = cursor.getColumnIndexOrThrow("id");
+        int nameIndex = cursor.getColumnIndexOrThrow("name");
+        int emailIndex = cursor.getColumnIndexOrThrow("email");
+        int phoneIndex = cursor.getColumnIndexOrThrow("phone");
+
         while (cursor.moveToNext()) {
 
-            int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
-            String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
-            String email = cursor.getString(cursor.getColumnIndexOrThrow("email"));
-            String phone = cursor.getString(cursor.getColumnIndexOrThrow("phone"));
+            int id = cursor.getInt(idIndex);
+            String name = cursor.getString(nameIndex);
+            String email = cursor.getString(emailIndex);
+            String phone = cursor.getString(phoneIndex);
 
             builder.append("ID: ").append(id).append("\n")
                     .append("Name: ").append(name).append("\n")
