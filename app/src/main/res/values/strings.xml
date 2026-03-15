@@ -10,4 +10,6 @@
     <string name="enter_your_phone">Enter your phone</string>
     <string name="save_student">Save Student</string>
     <string name="student_list">Student List</string>
+    <string name="no_data_found">No data found</string>
+    <string name="demo_text">Demo Text</string>
 </resources>

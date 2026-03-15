@@ -2,7 +2,10 @@ package com.eresults.sqlitedatabase;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +17,9 @@ public class ListActivity extends AppCompatActivity {
 
     TextView tvList;
     DatabaseHelper databaseHelper;
+
+    EditText edtSearchId;
+    Button btnSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,13 +37,49 @@ public class ListActivity extends AppCompatActivity {
 
         // Loading data
         loadData();
+
+        edtSearchId = findViewById(R.id.edtSearchId);
+        btnSearch = findViewById(R.id.btnSearch);
+
+        btnSearch.setOnClickListener(v -> {
+
+            String idText = edtSearchId.getText().toString();
+
+            if(idText.isEmpty()){
+                Toast.makeText(this,"Enter ID",Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            int id = Integer.parseInt(idText);
+
+            Cursor cursor = databaseHelper.searchDataById(id);
+
+            if(cursor.getCount() == 0){
+                tvList.setText("No data found");
+                cursor.close();
+                return;
+            }
+
+            StringBuilder builder = new StringBuilder();
+
+            while(cursor.moveToNext()){
+                builder.append("ID: ").append(cursor.getInt(0)).append("\n")
+                        .append("Name: ").append(cursor.getString(1)).append("\n")
+                        .append("Email: ").append(cursor.getString(2)).append("\n")
+                        .append("Phone: ").append(cursor.getString(3)).append("\n\n");
+            }
+
+            tvList.setText(builder.toString());
+
+            cursor.close();
+        });
     }
 
     private void loadData() {
         Cursor cursor = databaseHelper.showAllInfo();
 
         if (cursor.getCount() == 0) {
-            tvList.setText("No data found");
+            tvList.setText(R.string.no_data_found);
             cursor.close();
             return;
         }
