@@ -13,10 +13,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class ListActivity extends AppCompatActivity {
 
+    // UI Components
     TextView tvList;
-    DatabaseHelper databaseHelper;
     EditText edtSearchId;
-    Button btnSearch;
+
+    // Database helper class to access SQLite database
+    DatabaseHelper databaseHelper;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,93 +27,141 @@ public class ListActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_list);
 
+        // Initialize UI Components
         tvList = findViewById(R.id.tv_list);
         edtSearchId = findViewById(R.id.edtSearchId);
-        btnSearch = findViewById(R.id.btnSearch);
 
+        // Initialize Database
         databaseHelper = new DatabaseHelper(this);
 
-        // Show all data
+
+        // Load data when app start
         loadAllData();
 
-        // Auto search
-        searchData();
+        // Search functionality setup
+        setupSearch();
     }
 
 
-    // সব ডাটা দেখানোর method
+    // =====================================================
+    // Method: loadAllData()
+    // Purpose: Database থেকে সব data নিয়ে UI তে show করা
+    // =====================================================
     private void loadAllData() {
 
+        // Database থেকে সব data fetch
         Cursor cursor = databaseHelper.showAllInfo();
 
-        if (cursor.getCount() == 0) {
-            tvList.setText(R.string.no_data_found);
-            cursor.close();
-            return;
-        }
-
-        StringBuilder builder = new StringBuilder();
-        builder.append("Total Data: ").append(cursor.getCount()).append("\n\n");
-
-        while (cursor.moveToNext()) {
-
-            builder.append("ID: ").append(cursor.getInt(0)).append("\n")
-                    .append("Name: ").append(cursor.getString(1)).append("\n")
-                    .append("Email: ").append(cursor.getString(2)).append("\n")
-                    .append("Phone: ").append(cursor.getString(3)).append("\n\n");
-        }
-
-        tvList.setText(builder.toString());
-
-        cursor.close();
+        // Data display method call
+        displayData(cursor);
     }
 
 
-    private void searchData() {
+    // =====================================================
+    // Method: setupSearch()
+    // Purpose: EditText এ ID লিখলে real-time search করা
+    // =====================================================
+    private void setupSearch() {
+
         edtSearchId.addTextChangedListener(new TextWatcher() {
 
+            // Text change হওয়ার আগে trigger হয়
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
+            // Text change হওয়ার সময় trigger হয়
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
+                // EditText থেকে ID text নেওয়া
                 String idText = s.toString().trim();
 
+                // যদি EditText খালি হয় → সব data show করবে
                 if (idText.isEmpty()) {
-                    loadAllData(); // Empty হলে সব data
-                } else {
+                    loadAllData();
+                    return;
+                }
 
+                try {
+
+                    // String → Integer convert
                     int id = Integer.parseInt(idText);
 
+                    // Database থেকে নির্দিষ্ট ID এর data search
                     Cursor cursor = databaseHelper.searchDataById(id);
 
-                    if (cursor.getCount() == 0) {
-                        tvList.setText("No data found");
-                        cursor.close();
-                        return;
-                    }
+                    // UI তে data show
+                    displayData(cursor);
 
-                    StringBuilder builder = new StringBuilder();
+                } catch (NumberFormatException e) {
 
-                    while (cursor.moveToNext()) {
+                    // যদি ID number না হয়
+                    tvList.setText("Invalid ID");
 
-                        builder.append("ID: ").append(cursor.getInt(0)).append("\n")
-                                .append("Name: ").append(cursor.getString(1)).append("\n")
-                                .append("Email: ").append(cursor.getString(2)).append("\n")
-                                .append("Phone: ").append(cursor.getString(3)).append("\n\n");
-                    }
-
-                    tvList.setText(builder.toString());
-
-                    cursor.close();
                 }
             }
 
+            // Text change হওয়ার পরে trigger হয়
             @Override
             public void afterTextChanged(Editable s) {
             }
         });
+    }
+
+
+    // =====================================================
+    // Method: displayData()
+    // Purpose: Cursor থেকে data নিয়ে TextView তে show করা
+    // =====================================================
+    private void displayData(Cursor cursor) {
+
+        // যদি কোন data না থাকে
+        if (cursor == null || cursor.getCount() == 0) {
+
+            tvList.setText(R.string.no_data_found);
+
+            // Cursor close করা
+            if (cursor != null) cursor.close();
+
+            return;
+        }
+
+        // String build করার জন্য StringBuilder ব্যবহার
+        StringBuilder builder = new StringBuilder();
+
+        // Total data count show
+        builder.append("Total Data: ").append(cursor.getCount()).append("\n\n");
+
+
+        // =============================
+        // Column index বের করা
+        // =============================
+        int idIndex = cursor.getColumnIndexOrThrow("id");
+        int nameIndex = cursor.getColumnIndexOrThrow("name");
+        int emailIndex = cursor.getColumnIndexOrThrow("email");
+        int phoneIndex = cursor.getColumnIndexOrThrow("phone");
+
+
+        // =============================
+        // Cursor loop করে সব row পড়া
+        // =============================
+        while (cursor.moveToNext()) {
+
+            // Column index ব্যবহার করে value নেওয়া
+            int id = cursor.getInt(idIndex);
+            String name = cursor.getString(nameIndex);
+            String email = cursor.getString(emailIndex);
+            String phone = cursor.getString(phoneIndex);
+
+            // Data builder এ append করা
+            builder.append("ID: ").append(id).append("\n").append("Name: ").append(name).append("\n").append("Email: ").append(email).append("\n").append("Phone: ").append(phone).append("\n\n");
+        }
+
+        // Final result TextView তে show
+        tvList.setText(builder.toString());
+
+        // Cursor close to avoid memory leak
+        cursor.close();
     }
 }
